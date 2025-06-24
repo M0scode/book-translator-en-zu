@@ -1,77 +1,42 @@
-# book_translator_app.py
-
 import streamlit as st
-from transformers import MarianMTModel, MarianTokenizer
-import nltk
-nltk.download('punkt')
-from nltk.tokenize import sent_tokenize
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-# Load MarianMT English to isiZulu translation model
+# Load model and tokenizer
 @st.cache_resource
-
 def load_model():
-    model_name = 'Helsinki-NLP/opus-mt-en-zu'
-    tokenizer = MarianTokenizer.from_pretrained(model_name)
-    model = MarianMTModel.from_pretrained(model_name)
+    model_name = "facebook/nllb-200-distilled-600M"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
     return tokenizer, model
 
 tokenizer, model = load_model()
 
-# Translation function that handles batching
+# Translation function
+def translate_en_to_zulu(text):
+    tokenizer.src_lang = "eng_Latn"
+    zul_lang_token_id = tokenizer.convert_tokens_to_ids("zul_Latn")
+    model.config.forced_bos_token_id = zul_lang_token_id
 
-def translate_text(text, tokenizer, model):
-    sentences = sent_tokenize(text)
-    translated_sentences = []
-
-    for sentence in sentences:
-        if sentence.strip():
-            batch = tokenizer.prepare_seq2seq_batch([sentence], return_tensors="pt", truncation=True)
-            output = model.generate(**batch)
-            translated = tokenizer.decode(output[0], skip_special_tokens=True)
-            translated_sentences.append(translated)
-
-    return " ".join(translated_sentences)
+    inputs = tokenizer(text, return_tensors="pt")
+    tokens = model.generate(
+        **inputs,
+        max_length=100,
+        num_beams=5,
+        early_stopping=True,
+        no_repeat_ngram_size=3
+    )
+    return tokenizer.batch_decode(tokens, skip_special_tokens=True)[0]
 
 # Streamlit UI
-st.set_page_config(page_title="English to isiZulu Book Translator", layout="wide")
-st.title("📚 English to isiZulu Book Translator")
-st.markdown("This app translates English book text to isiZulu using a pre-trained MarianMT model.")
+st.title("📘 English to isiZulu Translator")
+st.markdown("Translate English sentences into isiZulu using NLLB-200")
 
-# File uploader for .txt files
-uploaded_file = st.file_uploader("Upload your English book (.txt)", type=["txt"])
+input_text = st.text_area("Enter English text:", height=150)
 
-if uploaded_file:
-    # Read the uploaded text file
-    english_text = uploaded_file.read().decode("utf-8")
-    
-    st.subheader("📖 Sample from Uploaded Book")
-    st.text(english_text[:500])  # Show a preview of the text
-
-    # Translate when button is pressed
-    if st.button("Translate to isiZulu"):
-        st.info("Translating... This may take a few moments.")
-
-        # Break the input into paragraphs
-        paragraphs = english_text.split("\n\n")
-        translated_paragraphs = []
-
-        for para in paragraphs:
-            if para.strip():
-                translated_paragraph = translate_text(para, tokenizer, model)
-                translated_paragraphs.append(translated_paragraph)
-
-        # Join translated paragraphs
-        translated_text = "\n\n".join(translated_paragraphs)
-
-        st.subheader("🔁 isiZulu Translation")
-        st.text_area("Translated isiZulu Text", translated_text, height=300)
-
-        # Download button for translation
-        st.download_button(
-            label="📥 Download Translated Text",
-            data=translated_text,
-            file_name="translated_book.txt",
-            mime="text/plain"
-        )
-else:
-    st.warning("Please upload a .txt file to begin.")
+if st.button("Translate"):
+    if input_text.strip():
+        translation = translate_en_to_zulu(input_text)
+        st.success("isiZulu Translation:")
+        st.write(translation)
+    else:
+        st.warning("Please enter some text to translate.")
