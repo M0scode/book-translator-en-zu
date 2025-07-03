@@ -13,11 +13,10 @@ def load_model():
 
 tokenizer, model = load_model()
 
-# Translation function
+# Translate
 def translate_en_to_zulu(text):
     tokenizer.src_lang = "eng_Latn"
-    zul_lang_token_id = tokenizer.convert_tokens_to_ids("zul_Latn")
-    model.config.forced_bos_token_id = zul_lang_token_id
+    model.config.forced_bos_token_id = tokenizer.convert_tokens_to_ids("zul_Latn")
 
     inputs = tokenizer(text, return_tensors="pt", truncation=True)
     tokens = model.generate(
@@ -29,48 +28,96 @@ def translate_en_to_zulu(text):
     )
     return tokenizer.batch_decode(tokens, skip_special_tokens=True)[0]
 
-# Streamlit UI
-st.title("📘 English to isiZulu Translator - Batch Mode")
-st.markdown("Upload a `.txt` file or paste multiple English paragraphs to translate into isiZulu.")
+# Custom CSS styling
+st.markdown("""
+    <style>
+    body {
+        background-color: #f4f1ee;
+        color: #1b1b1b;
+    }
+    .stButton>button {
+        background-color: #228b22;
+        color: white;
+        border-radius: 8px;
+    }
+    .stButton>button:hover {
+        background-color: #b22222;
+        color: white;
+    }
+    .stTextArea textarea {
+        background-color: #fffaf0;
+        border: 1px solid #8b4513;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# Text input or file upload
-input_method = st.radio("Input Method", ["Paste Text", "Upload .txt File"])
+# Sidebar
+st.sidebar.title("⚙️ Translator Settings")
+input_method = st.sidebar.radio("Input Method", ["Paste Text", "Upload .txt File"])
+
+paragraphs = []
 
 if input_method == "Paste Text":
-    input_text = st.text_area("Enter English text (one or more paragraphs):", height=200)
-    paragraphs = [p.strip() for p in input_text.split("\n") if p.strip()]
+    user_input = st.sidebar.text_area("Enter your text:", height=200)
+    paragraphs = [p.strip() for p in user_input.split("\n") if p.strip()]
 else:
-    uploaded_file = st.file_uploader("Upload a .txt file", type="txt")
-    paragraphs = []
-    if uploaded_file is not None:
+    uploaded_file = st.sidebar.file_uploader("Upload a .txt file", type="txt")
+    if uploaded_file:
         file_text = uploaded_file.read().decode("utf-8")
         paragraphs = [p.strip() for p in file_text.split("\n") if p.strip()]
-        st.text_area("File Content Preview:", file_text, height=200)
+        st.sidebar.success(f"Loaded {len(paragraphs)} paragraphs.")
 
-if paragraphs and st.button("Translate"):
-    results = []
-    with st.spinner("Translating..."):
-        for p in paragraphs:
-            translation = translate_en_to_zulu(p)
-            results.append({"English": p, "isiZulu": translation})
+# App title
+st.title("🌍 English to isiZulu Book Translator")
 
-    # Display results
-    st.success("Translations complete!")
-    df = pd.DataFrame(results)
-    st.dataframe(df)
+# Tabs
+tabs = st.tabs(["📝 Input", "🔁 Translation", "📥 Downloads"])
 
-    # File download options
-    st.markdown("### 📥 Download Translations")
-    
-    # CSV
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button("Download as CSV", csv, "translations.csv", "text/csv")
+# Tab 1: Input Review
+with tabs[0]:
+    st.subheader("📄 Input Preview")
+    if paragraphs:
+        for i, p in enumerate(paragraphs):
+            st.markdown(f"**Paragraph {i+1}:** {p}")
+    else:
+        st.info("Please paste text or upload a .txt file from the sidebar.")
 
-    # JSON
-    json_data = json.dumps(results, ensure_ascii=False, indent=2)
-    st.download_button("Download as JSON", json_data, "translations.json", "application/json")
+# Tab 2: Translation
+with tabs[1]:
+    if paragraphs:
+        if st.button("Translate"):
+            results = []
+            with st.spinner("Translating paragraphs..."):
+                for p in paragraphs:
+                    translation = translate_en_to_zulu(p)
+                    results.append({"English": p, "isiZulu": translation})
+            df = pd.DataFrame(results)
+            st.success("✅ Translation complete!")
+            st.dataframe(df, use_container_width=True)
+            st.session_state["translations"] = df
+    else:
+        st.warning("No input found. Please add text on the sidebar.")
 
-    # TXT
-    txt_lines = [f"{row['English']}\n→ {row['isiZulu']}\n" for row in results]
-    txt_content = "\n".join(txt_lines)
-    st.download_button("Download as TXT", txt_content.encode("utf-8"), "translations.txt", "text/plain")
+# Tab 3: Downloads
+with tabs[2]:
+    if "translations" in st.session_state:
+        df = st.session_state["translations"]
+
+        st.subheader("📁 Download Translations")
+        
+        # CSV
+        csv = df.to_csv(index=False).encode("utf-8")
+        st.download_button("Download CSV", csv, "translations.csv", "text/csv")
+
+        # JSON
+        json_data = df.to_dict(orient="records")
+        json_str = json.dumps(json_data, ensure_ascii=False, indent=2)
+        st.download_button("Download JSON", json_str, "translations.json", "application/json")
+
+        # TXT
+        txt_lines = [f"{row['English']}\n→ {row['isiZulu']}\n" for _, row in df.iterrows()]
+        txt_output = "\n".join(txt_lines)
+        st.download_button("Download TXT", txt_output.encode("utf-8"), "translations.txt", "text/plain")
+    else:
+        st.info("No translations available yet.")
+
