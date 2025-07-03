@@ -1,8 +1,5 @@
 streamlit
 transformers
-torch
 sentencepiece
-PyPDF2
-python-docx
-tqdm
 nltk
+pandas
