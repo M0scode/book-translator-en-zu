@@ -16,16 +16,18 @@ tokenizer, model = load_model()
 # Translate
 def translate_en_to_zulu(text):
     tokenizer.src_lang = "eng_Latn"
-    model.config.forced_bos_token_id = tokenizer.convert_tokens_to_ids("zul_Latn")
 
     inputs = tokenizer(text, return_tensors="pt", truncation=True)
+
     tokens = model.generate(
         **inputs,
+        forced_bos_token_id=tokenizer.convert_tokens_to_ids("zul_Latn"),
         max_length=200,
         num_beams=5,
         early_stopping=True,
-        no_repeat_ngram_size=3
+        no_repeat_ngram_size=3,
     )
+
     return tokenizer.batch_decode(tokens, skip_special_tokens=True)[0]
 
 # Custom CSS styling
