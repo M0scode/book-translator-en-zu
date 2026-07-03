@@ -89,14 +89,42 @@ with tabs[1]:
     if paragraphs:
         if st.button("Translate"):
             results = []
+
             with st.spinner("Translating paragraphs..."):
-                for p in paragraphs:
+                for i, p in enumerate(paragraphs, start=1):
                     translation = translate_en_to_zulu(p)
-                    results.append({"English": p, "isiZulu": translation})
-            df = pd.DataFrame(results)
+
+                    results.append({
+                        "English": p,
+                        "isiZulu": translation
+                    })
+
             st.success("✅ Translation complete!")
-            st.dataframe(df, use_container_width=True)
+
+            # Display each paragraph in text boxes
+            for i, result in enumerate(results, start=1):
+                st.subheader(f"Paragraph {i}")
+
+                st.text_area(
+                    "English",
+                    value=result["English"],
+                    height=180,
+                    key=f"eng_{i}"
+                )
+
+                st.text_area(
+                    "isiZulu",
+                    value=result["isiZulu"],
+                    height=180,
+                    key=f"zu_{i}"
+                )
+
+                st.divider()
+
+            # Save results for download later
+            df = pd.DataFrame(results)
             st.session_state["translations"] = df
+
     else:
         st.warning("No input found. Please add text on the sidebar.")
 
