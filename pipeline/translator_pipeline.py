@@ -46,31 +46,78 @@ def translate_document(file_path):
         cleaned_text
     )
 
+    # 4. Create translation batches
+
+    batches = create_batches(
+        paragraphs,
+        batch_size=10
+    )
+
+
+    # 5. Translate each batch
+
+    for batch_number, batch in enumerate(
+        batches,
+        start=1
+    ):
+
+        print(
+            f"Processing batch {batch_number}/{len(batches)}"
+        )
+
+
+        for paragraph in batch:
+
+            translation = translate(
+                paragraph["text"]
+            )
+
+
+            results.append(
+                {
+                    "id": paragraph["id"],
+                    "english": paragraph["text"],
+                    "zulu": translation
+                }
+            )
+
+
+    results = []
+
+def translate_text(content):
+    """
+    Translate raw text input.
+
+    Parameters:
+        content (str):
+            User provided text
+
+    Returns:
+        list:
+            Translation results
+    """
+
+
+    # 1. Clean text
+
+    cleaned_text = clean_text(
+        content
+    )
+
+
+    # 2. Split paragraphs
+
+    paragraphs = split_paragraphs(
+        cleaned_text
+    )
+
 
     results = []
 
 
-    # 4. Create translation batches
+    # 3. Translate paragraphs
 
-batches = create_batches(
-    paragraphs,
-    batch_size=10
-)
-
-
-# 5. Translate each batch
-
-for batch_number, batch in enumerate(
-    batches,
-    start=1
-):
-
-    print(
-        f"Processing batch {batch_number}/{len(batches)}"
-    )
-
-
-    for paragraph in batch:
+    for paragraph in paragraphs:
 
         translation = translate(
             paragraph["text"]
@@ -80,7 +127,48 @@ for batch_number, batch in enumerate(
         results.append(
             {
                 "id": paragraph["id"],
-                "english": paragraph["text"],
-                "zulu": translation
+
+                "english":
+                paragraph["text"],
+
+                "zulu":
+                translation
             }
         )
+    # 4. Create translation batches
+
+    batches = create_batches(
+        paragraphs,
+        batch_size=10
+    )
+
+
+    # 5. Translate each batch
+
+    for batch_number, batch in enumerate(
+        batches,
+        start=1
+    ):
+
+        print(
+            f"Processing batch {batch_number}/{len(batches)}"
+        )
+
+
+        for paragraph in batch:
+
+            translation = translate(
+                paragraph["text"]
+            )
+
+
+            results.append(
+                {
+                    "id": paragraph["id"],
+                    "english": paragraph["text"],
+                    "zulu": translation
+                }
+            )
+
+    return results
+
