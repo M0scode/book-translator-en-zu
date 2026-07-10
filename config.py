@@ -13,5 +13,5 @@ TARGET_LANGUAGE = "zul_Latn"
 
 # Generation parameters
 MAX_LENGTH = 200
-NUM_BEAMS = 5
+NUM_BEAMS = 4
 NO_REPEAT_NGRAM_SIZE = 3
