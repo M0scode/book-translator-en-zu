@@ -13,24 +13,21 @@ from config import (
 from .model_loader import load_model
 
 
-tokenizer, model = load_model()
-
-
 def translate(text):
 
     """
     Translate English text to isiZulu.
     """
 
-    tokenizer.src_lang = SOURCE_LANGUAGE
+    tokenizer, model = load_model()
 
+    tokenizer.src_lang = SOURCE_LANGUAGE
 
     inputs = tokenizer(
         text,
         return_tensors="pt",
         truncation=True
     )
-
 
     translated_tokens = model.generate(
         **inputs,
@@ -45,11 +42,9 @@ def translate(text):
         early_stopping=True
     )
 
-
     result = tokenizer.batch_decode(
         translated_tokens,
         skip_special_tokens=True
     )
-
 
     return result[0]

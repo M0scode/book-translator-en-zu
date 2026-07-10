@@ -2,7 +2,7 @@
 Loads the translation model and tokenizer.
 """
 
-import streamlit as st
+from functools import lru_cache
 
 from transformers import (
     AutoTokenizer,
@@ -12,7 +12,7 @@ from transformers import (
 from config import MODEL_NAME
 
 
-@st.cache_resource
+@lru_cache(maxsize=1)
 def load_model():
 
     tokenizer = AutoTokenizer.from_pretrained(
@@ -20,7 +20,8 @@ def load_model():
     )
 
     model = AutoModelForSeq2SeqLM.from_pretrained(
-        MODEL_NAME
+        MODEL_NAME,
+        use_safetensors=True
     )
 
     return tokenizer, model
