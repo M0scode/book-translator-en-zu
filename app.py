@@ -7,7 +7,9 @@ User interface only.
 
 import streamlit as st
 
-
+from services.translation_service import (
+    translate_content
+)
 
 st.set_page_config(
     page_title="English - isiZulu Translator",
@@ -64,7 +66,15 @@ term = st.sidebar.selectbox(
     ]
 )
 
+metadata = {
 
+    "grade": grade,
+
+    "subject": subject,
+
+    "term": term
+
+}
 
 st.header(
     "Learning Material Input"
@@ -139,5 +149,72 @@ if text_content:
     st.text_area(
         "Content",
         text_content,
-        height=200
+        height=200,
+        key="input_text"
     )
+
+if st.button("🚀 Translate"):
+
+    if not text_content:
+        st.warning(
+            "Please enter text before translating."
+        )
+
+    else:
+
+        with st.spinner(
+            "Translating content..."
+        ):
+
+            resource = translate_content(
+                text_content,
+                metadata,
+                input_type="text"
+            )
+
+
+        st.session_state["resource"] = resource
+
+
+        st.success(
+            "Translation completed!"
+        )
+
+if "resource" in st.session_state:
+
+    resource = st.session_state["resource"]
+
+
+    st.header(
+        "📚 Translation Result"
+    )
+
+
+    for index, item in enumerate(resource["content"], start=1):
+
+        st.subheader(
+            f"Paragraph {index}"
+        )
+
+
+        col1, col2 = st.columns(2)
+
+
+        with col1:
+
+            st.text_area(
+                "English",
+                item["english"],
+                height=150,
+                key=f"english_{index}"
+            )
+
+
+        with col2:
+
+            st.text_area(
+                "isiZulu",
+                item["zulu"],
+                height=150,
+                key=f"zulu_{index}"
+            ) 
