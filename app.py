@@ -7,9 +7,11 @@ from ui.sidebar import render_sidebar
 from ui.input_tab import render_input
 from ui.results_view import render_results
 from ui.download_tab import render_downloads
+from ui.theme import load_css
 
 
 render_branding()
+load_css()
 
 
 metadata = render_sidebar()
