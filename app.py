@@ -8,7 +8,7 @@ from ui.input_tab import render_input
 from ui.results_view import render_results
 from ui.download_tab import render_downloads
 from ui.theme import load_css
-
+from ui.learner_view import render_learner_mode
 
 render_branding()
 load_css()
@@ -17,11 +17,13 @@ load_css()
 metadata = render_sidebar()
 
 
-tab1, tab2, tab3 = st.tabs(
+tab1, tab2, tab3, tab4 = st.tabs(
     [
         "📝 Translate",
         "📚 Results",
+        "📖 Learner Mode",
         "⬇️ Downloads"
+        
     ]
 )
 
@@ -81,6 +83,22 @@ with tab2:
 
 
 with tab3:
+
+    if "resource" in st.session_state:
+
+        render_learner_mode(
+            st.session_state["resource"]
+        )
+
+    else:
+
+        st.info(
+            "Translate content first."
+        )
+
+
+
+with tab4:
 
     if "resource" in st.session_state:
 
