@@ -141,11 +141,6 @@ else:
 
 if text_content:
 
-    st.subheader(
-        "📄 Text Preview"
-    )
-
-
     st.text_area(
         "Content",
         text_content,
@@ -218,3 +213,75 @@ if "resource" in st.session_state:
                 height=150,
                 key=f"zulu_{index}"
             ) 
+
+        st.header(
+            "⬇️ Download Learning Resources"
+        )
+
+
+        files = resource["files"]
+
+
+        with open(
+            files["docx"],
+            "rb"
+        ) as file:
+
+            st.download_button(
+                label="📄 Download DOCX",
+                data=file,
+                file_name="translation.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            )
+
+
+        with open(
+            files["pdf"],
+            "rb"
+        ) as file:
+
+            st.download_button(
+                label="📕 Download PDF",
+                data=file,
+                file_name="translation.pdf",
+                mime="application/pdf"
+            )
+
+
+        with open(
+            files["csv"],
+            "rb"
+        ) as file:
+
+            st.download_button(
+                label="📊 Download CSV",
+                data=file,
+                file_name="translation.csv",
+                mime="text/csv"
+            )
+
+
+        with open(
+            files["json"],
+            "rb"
+        ) as file:
+
+            st.download_button(
+                label="🗂 Download JSON",
+                data=file,
+                file_name="translation.json",
+                mime="application/json"
+            )
+
+
+        with open(
+            files["mobile"],
+            "rb"
+        ) as file:
+
+            st.download_button(
+                label="📱 Download Learner Mobile Resource",
+                data=file,
+                file_name="learner_resource.json",
+                mime="application/json"
+            )
