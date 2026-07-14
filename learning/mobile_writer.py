@@ -10,8 +10,8 @@ import json
 
 
 
-def save_mobile_content(
-    content,
+def save_mobile_resource(
+    resource,
     output_path
 ):
     """
@@ -34,8 +34,10 @@ def save_mobile_content(
     ) as file:
 
         json.dump(
-            content,
+            resource,
             file,
             ensure_ascii=False,
             indent=4
         )
+
+        return output_path

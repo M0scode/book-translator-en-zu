@@ -14,7 +14,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 
 def save_pdf(
-    translations,
+    resource,
     output_path,
     title="English - isiZulu Translation"
 ):
@@ -29,7 +29,7 @@ def save_pdf(
         output_path (str):
             PDF destination
     """
-
+    translations = resource["content"]
 
     document = SimpleDocTemplate(
         output_path
@@ -109,3 +109,5 @@ def save_pdf(
 
 
     document.build(content)
+
+    return output_path

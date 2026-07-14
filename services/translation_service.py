@@ -11,7 +11,7 @@ from pipeline.translator_pipeline import (
     translate_text as pipeline_translate_text
 )
 
-
+from outputs.output_manager import export_outputs
 
 def translate_content(
     content,
@@ -58,6 +58,13 @@ def translate_content(
         "content": result
 
     }
+
+    files = export_outputs(
+    resource
+)
+
+
+    resource["files"] = files
 
 
     return resource

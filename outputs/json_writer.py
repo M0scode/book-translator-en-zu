@@ -11,9 +11,8 @@ import json
 
 
 def save_json(
-    translations,
+    resource,
     output_path,
-    metadata=None
 ):
     """
     Save translations as JSON.
@@ -25,26 +24,21 @@ def save_json(
         output_path (str):
             Destination file
 
-        metadata (dict):
-            Optional book information
+        
     """
 
 
-    output = {
-        "metadata": metadata or {},
-        "content": translations
-    }
-
-
     with open(
-        output_path,
-        "w",
-        encoding="utf-8"
+    output_path,
+    "w",
+    encoding="utf-8"
     ) as file:
 
         json.dump(
-            output,
+            resource,
             file,
             ensure_ascii=False,
             indent=4
         )
+
+    return output_path

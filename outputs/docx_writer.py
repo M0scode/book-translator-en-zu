@@ -11,7 +11,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 
 def save_docx(
-    translations,
+    resource,
     output_path,
     title="English - isiZulu Translation"
 ):
@@ -29,7 +29,7 @@ def save_docx(
         title (str):
             Document title
     """
-
+    translations = resource["content"]
 
     document = Document()
 
@@ -96,3 +96,5 @@ def save_docx(
     document.save(
         output_path
     )
+    
+    return output_path

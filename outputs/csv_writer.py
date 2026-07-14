@@ -7,7 +7,7 @@ import csv
 
 
 def save_csv(
-    translations,
+    resource,
     output_path
 ):
     """
@@ -20,7 +20,7 @@ def save_csv(
         output_path (str):
             Destination CSV file
     """
-
+    translations = resource["content"]
 
     with open(
         output_path,
@@ -46,3 +46,5 @@ def save_csv(
         writer.writerows(
             translations
         )
+        
+        return output_path
