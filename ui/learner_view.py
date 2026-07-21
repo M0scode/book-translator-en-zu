@@ -55,12 +55,14 @@ def render_learner_mode(resource):
 
             for term in section["key_terms"]:
 
-                st.markdown(
-                    f"""
-                    **{term['zulu_term']}**
+                with st.expander(
+                    f"📝 {term['zulu_term']}"
+                ):
 
-                    🇬🇧 {term['term']}
+                    st.write(
+                        f"🇬🇧 {term['term']}"
+                    )
 
-                    {term['meaning']}
-                    """
-            )
+                    st.write(
+                        term["meaning"]
+                    )
