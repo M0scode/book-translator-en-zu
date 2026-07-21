@@ -10,6 +10,7 @@ from ui.results_view import render_results
 from ui.download_tab import render_downloads
 from ui.theme import load_css
 from ui.learner_view import render_learner_mode
+from learning.learner_formatter import create_learner_resource
 
 render_branding()
 load_css()
@@ -96,14 +97,19 @@ with tab3:
 
     if "resource" in st.session_state:
 
-        render_learner_mode(
+        learner_resource = create_learner_resource(
             st.session_state["resource"]
+        )
+
+
+        render_learner_mode(
+            learner_resource
         )
 
     else:
 
         st.info(
-            "Translate content first."
+            "Translate content first to access learner mode."
         )
 
 

@@ -20,32 +20,47 @@ def render_learner_mode(resource):
     )
 
 
-    for index, item in enumerate(
-        resource["content"],
-        start=1
-    ):
+    for section in resource["sections"]:
 
         st.subheader(
-            f"📖 Section {index}"
+            f"📖 Section {section['section_id']}"
         )
 
 
         st.markdown(
-            "**🇿🇦 isiZulu Learning Content**"
+            "### 🇿🇦 Lesson Content"
         )
 
         st.write(
-            item["zulu"]
+            section["lesson_content"]
         )
 
 
-        st.divider()
+        with st.expander(
+            "🇬🇧 View English Reference"
+        ):
+
+            st.write(
+                section["english_reference"]
+            )
+        
+        if section["key_terms"]:
+
+            st.divider()
+
+            st.subheader(
+                "📘 Key Terms"
+            )
 
 
-        st.markdown(
-            "**🇬🇧 English Reference**"
-        )
+            for term in section["key_terms"]:
 
-        st.write(
-            item["english"]
-        )
+                st.markdown(
+                    f"""
+                    **{term['zulu_term']}**
+
+                    🇬🇧 {term['term']}
+
+                    {term['meaning']}
+                    """
+            )
