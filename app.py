@@ -49,7 +49,7 @@ with tab1:
             start_time = time.perf_counter()
 
             with st.spinner(
-                "Translating content... This may take a minute for longer lessons."
+                "Translating content... This may take over a minute for longer lessons."
             ):
 
                 resource = translate_content(
