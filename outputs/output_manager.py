@@ -15,7 +15,7 @@ from learning.mobile_writer import (
 
 
 OUTPUT_DIR = Path(
-    "outputs/generated"
+    "generated"
 )
 
 

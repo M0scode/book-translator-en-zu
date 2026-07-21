@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 
 from services.translation_service import translate_content
 
@@ -45,9 +46,10 @@ with tab1:
             )
 
         else:
+            start_time = time.perf_counter()
 
             with st.spinner(
-                "Translating content..."
+                "Translating content... This may take a minute for longer lessons."
             ):
 
                 resource = translate_content(
@@ -56,14 +58,22 @@ with tab1:
                     input_type="text"
                 )
 
+            end_time = time.perf_counter()
+
+            elapsed_time = round(
+                end_time - start_time,
+                2
+            )
+
+            resource["translation_time"] = elapsed_time
 
             st.session_state["resource"] = resource
 
 
             st.success(
                 "Translation completed!"
-            )
-
+                    )
+                    
 
 
 with tab2:
