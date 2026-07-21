@@ -20,8 +20,8 @@ def save_docx(
 
     Parameters:
 
-        translations (list):
-            Translation records
+        resource (dict):
+            Translation resource
 
         output_path (str):
             Destination DOCX file
@@ -29,7 +29,7 @@ def save_docx(
         title (str):
             Document title
     """
-    translations = resource["content"]
+    #translations = resource["content"]
 
     document = Document()
 
@@ -57,35 +57,55 @@ def save_docx(
 
     # Content
 
-    for item in translations:
-
+    for section in resource["sections"]:
 
         document.add_heading(
-            f"Paragraph {item['id']}",
+            f"Section {section['section_id']}",
             level=2
         )
 
 
         document.add_paragraph(
-            "English:",
+            "🇿🇦 isiZulu Learning Content",
             style="Intense Quote"
         )
 
 
         document.add_paragraph(
-            item["english"]
+            section["lesson_content"]
         )
 
 
         document.add_paragraph(
-            "isiZulu:",
+            "🇬🇧 English Reference",
             style="Intense Quote"
         )
 
 
         document.add_paragraph(
-            item["zulu"]
+            section["english_reference"]
         )
+
+
+        if section["key_terms"]:
+
+            document.add_heading(
+                "📘 Key Terms",
+                level=3
+            )
+
+
+            for term in section["key_terms"]:
+
+                document.add_paragraph(
+                    f"{term['zulu_term']} "
+                    f"({term['term']})"
+                )
+
+
+                document.add_paragraph(
+                    term["meaning"]
+                )
 
 
         document.add_paragraph(

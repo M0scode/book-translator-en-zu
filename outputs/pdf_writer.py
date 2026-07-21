@@ -23,13 +23,13 @@ def save_pdf(
 
     Parameters:
 
-        translations (list):
-            Translation records
+        resource (dict):
+            Translation resource
 
         output_path (str):
             PDF destination
     """
-    translations = resource["content"]
+    #translations = resource["content"]
 
     document = SimpleDocTemplate(
         output_path
@@ -55,12 +55,12 @@ def save_pdf(
     )
 
 
-    for item in translations:
+    for section in resource["sections"]:
 
 
         content.append(
             Paragraph(
-                f"Paragraph {item['id']}",
+                f"Section {section['section_id']}",
                 styles["Heading2"]
             )
         )
@@ -76,7 +76,7 @@ def save_pdf(
 
         content.append(
             Paragraph(
-                item["english"],
+                section["english_reference"],
                 styles["Normal"]
             )
         )
@@ -97,7 +97,7 @@ def save_pdf(
 
         content.append(
             Paragraph(
-                item["zulu"],
+                section["lesson_content"],
                 styles["Normal"]
             )
         )
@@ -106,6 +106,33 @@ def save_pdf(
         content.append(
             Spacer(1,20)
         )
+    
+    if section["key_terms"]:
+
+        content.append(
+            Paragraph(
+                "Key Terms",
+                styles["Heading3"]
+            )
+        )
+
+
+        for term in section["key_terms"]:
+
+            content.append(
+                Paragraph(
+                    f"{term['zulu_term']} ({term['term']})",
+                    styles["Normal"]
+                )
+            )
+
+
+            content.append(
+                Paragraph(
+                    term["meaning"],
+                    styles["Normal"]
+                )
+            )
 
 
     document.build(content)

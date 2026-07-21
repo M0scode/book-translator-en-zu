@@ -13,6 +13,10 @@ from learning.mobile_writer import (
     save_mobile_resource
 )
 
+from learning.learner_formatter import (
+    create_learner_resource
+)
+
 
 OUTPUT_DIR = Path(
     "generated"
@@ -31,7 +35,9 @@ def export_outputs(resource):
         dict:
             Generated file paths
     """
-
+    learner_resource = create_learner_resource(
+        resource
+    )
 
     OUTPUT_DIR.mkdir(
         parents=True,
@@ -43,13 +49,13 @@ def export_outputs(resource):
 
 
     files["docx"] = save_docx(
-    resource,
+    learner_resource,
     str(OUTPUT_DIR / "translation.docx")
     )
 
 
     files["pdf"] = save_pdf(
-    resource,
+    learner_resource,
     str(OUTPUT_DIR / "translation.pdf")
     )
 
@@ -62,7 +68,7 @@ def export_outputs(resource):
 
 
     files["json"] = save_json(
-        resource,
+        learner_resource,
         str(OUTPUT_DIR / "translation.json")
     )
 
