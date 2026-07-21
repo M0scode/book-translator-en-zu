@@ -177,4 +177,9 @@ cython_debug/
 generated/
 
 # Streamlit cache
-.streamlit/
+.streamlit/cache/
+.streamlit/secrets.toml
+
+# Hugging Face cache
+.cache/
+huggingface/
